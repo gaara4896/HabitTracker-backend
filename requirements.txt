@@ -1,0 +1,11 @@
+flask==0.12.2
+flask-dotenv==0.1.1
+Flask-Jwt-Extended==3.4.0
+Flask-Mail==0.9.1
+Flask-Migrate==2.1.1
+flask-restplus==0.10.1
+Flask-Script==2.0.6
+Flask-SQLAlchemy==2.3.2
+gunicorn==19.7.1
+SQLAlchemy==1.2.0b3
+Werkzeug==0.13
