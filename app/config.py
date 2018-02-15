@@ -20,7 +20,6 @@ class Config(object):
     TESTING = os.environ.get('TESTING')
 
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
-    SQLALCHEMY_ECHO = os.environ.get('SQLALCHEMY_ECHO')
     SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get(
         'SQLALCHEMY_TRACK_MODIFICATIONS')
     SQLALCHEMY_POOL_SIZE = 100

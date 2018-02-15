@@ -2,7 +2,7 @@ from flask_migrate import MigrateCommand
 from flask_script import Manager, Server
 
 from app import create_app, db
-#from app.apis import models
+from app.apis import models
 
 app = create_app()
 app.app_context().push()
