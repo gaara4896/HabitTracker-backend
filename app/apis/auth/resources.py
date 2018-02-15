@@ -1,7 +1,6 @@
 from flask_jwt_extended import fresh_jwt_required, get_jwt_identity, jwt_refresh_token_required
 from flask_restplus import Namespace, Resource, fields, reqparse
 
-from app.extensions import jwt
 from .controllers import login, register, refresh, change_password, reset_password
 
 api = Namespace("auth", description="Authentication")

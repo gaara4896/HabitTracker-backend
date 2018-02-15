@@ -23,20 +23,25 @@ def register(username, password, email, nickname):
     try:
         db.session.commit()
     except IntegrityError:
-        response = jsonify(
-            error="The username {!r} already exists.".format(username))
+        response = jsonify(error={
+            "message": "The username {!r} already exists.".format(username)
+        })
         response.status_code = 400
         return response
 
-    return jsonify(success="Success created user " + username)
+    return jsonify(success={
+        "message": "Success created user " + username
+    })
 
 
 def login(username, password):
     user = User.query.filter_by(username=username).first()
 
     if not user:
-        response = jsonify(error="No user exist")
-        response.status_code = 400
+        response = jsonify(error={
+            "message": "No user exist"
+        })
+        response.status_code = 404
         return response
 
     if(user.check_password(password)):
@@ -45,35 +50,45 @@ def login(username, password):
             "refresh_token": create_refresh_token(identity=username)
         })
     else:
-        response = jsonify(error="Wrong password")
+        response = jsonify(error={
+            "message": "Wrong password"
+        })
         response.status_code = 400
         return response
 
 
 def refresh(identity):
-    return jsonify(access_token=create_access_token(identity=identity, fresh=False))
+    return jsonify(success={
+        "access_token": create_access_token(identity=identity, fresh=False)
+    })
 
 
 def change_password(username, password_new):
     user = User.query.filter_by(username=username).first()
 
     if not user:
-        response = jsonify(error="No user exist")
-        response.status_code = 400
+        response = jsonify(error={
+            "message": "No user exist"
+        })
+        response.status_code = 404
         return response
 
     user.update_password(password_new)
     db.session.commit()
 
-    return jsonify(success="Successful update password")
+    return jsonify(success={
+        "message": "Successful update password"
+    })
 
 
 def reset_password(username):
     user = User.query.filter_by(username=username).first()
 
     if not user:
-        response = jsonify(error="No user exist")
-        response.status_code = 400
+        response = jsonify(error={
+            "message": "No user exist"
+        })
+        response.status_code = 404
         return response
 
     alphabet = string.ascii_letters + string.digits
@@ -87,4 +102,6 @@ def reset_password(username):
         "Your new password is: " + new_password
     mail.send(msg)
 
-    return jsonify(success="Please check email")
+    return jsonify(success={
+        "message": "Please check email"
+    })

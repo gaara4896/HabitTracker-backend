@@ -5,6 +5,7 @@ from flask_jwt_extended.exceptions import JWTExtendedException
 
 from app.extensions import jwt
 from .auth.resources import api as auth
+from .habits.resources import api as habits
 
 
 class MyApi(Api):
@@ -35,6 +36,7 @@ api = MyApi(
     ui=False)
 
 api.add_namespace(auth, path="/auth")
+api.add_namespace(habits, path="/habits")
 
 
 @jwt.expired_token_loader

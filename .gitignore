@@ -102,3 +102,6 @@ ENV/
 
 # virtualenv wrapper
 .project
+
+# log
+log.txt
