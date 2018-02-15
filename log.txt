@@ -1,0 +1,7 @@
+[2018-02-15 16:41:10 +0800] [5290] [INFO] Starting gunicorn 19.7.1
+[2018-02-15 16:41:10 +0800] [5290] [INFO] Listening at: http://0.0.0.0:5000 (5290)
+[2018-02-15 16:41:10 +0800] [5290] [INFO] Using worker: sync
+[2018-02-15 16:41:10 +0800] [5293] [INFO] Booting worker with pid: 5293
+[2018-02-15 16:42:52 +0800] [5290] [INFO] Handling signal: int
+[2018-02-15 16:42:52 +0800] [5293] [INFO] Worker exiting (pid: 5293)
+[2018-02-15 16:42:52 +0800] [5290] [INFO] Shutting down: Master
