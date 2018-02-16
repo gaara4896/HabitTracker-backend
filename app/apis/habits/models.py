@@ -6,11 +6,12 @@ from ..common import Base
 class Habit(Base):
     __tablename__ = "habits"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     name = db.Column(db.String(255), nullable=False)
     period = db.Column(db.String(128), nullable=False)
     target_seconds = db.Column(db.Integer, nullable=False)
     active = db.Column(db.Boolean, default=True)
+    progresses = db.relationship("Progress", backref='habit', lazy=True)
 
     def __init__(self, user_id, name, period, target_seconds):
         self.user_id = user_id

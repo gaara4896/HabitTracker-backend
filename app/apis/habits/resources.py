@@ -1,7 +1,7 @@
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restplus import Namespace, Resource, fields, reqparse
 
-from .controllers import get_habits, add_habit, update_habit, deactivate_habit
+from .controllers import get_habits, add_habit, update_habit, activate_habit
 
 api = Namespace("habits", description="Habit")
 
@@ -49,6 +49,13 @@ class Habit(Resource):
 
     @jwt_required
     @api.header("Authorization", "access_token", required=True)
+    def post(self, habit_id):
+        username = get_jwt_identity()
+
+        return activate_habit(username, habit_id, True)
+
+    @jwt_required
+    @api.header("Authorization", "access_token", required=True)
     @api.doc(body=update_fields)
     @api.expect(update_fields)
     def put(self, habit_id):
@@ -66,7 +73,7 @@ class Habit(Resource):
     def delete(self, habit_id):
         username = get_jwt_identity()
 
-        return deactivate_habit(username, habit_id)
+        return activate_habit(username, habit_id, False)
 
 
 @api.route("/add")

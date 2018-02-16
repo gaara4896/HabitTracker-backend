@@ -9,9 +9,8 @@ def get_habits(username, habit_id=None):
     user = User.query.filter_by(username=username).first()
 
     if not habit_id:
-        habits = Habit.query.filter_by(user_id=user.id).all()
         result = []
-        for habit in habits:
+        for habit in user.habits:
             result.append({
                 "id": habit.id,
                 "name": habit.name,
@@ -20,7 +19,7 @@ def get_habits(username, habit_id=None):
                 "active": habit.active
             })
     else:
-        habit = Habit.query.filter_by(id=habit_id, user_id=user.id).first()
+        habit = Habit.query.with_parent(user).filter_by(id=habit_id).first()
 
         if not habit:
             response = jsonify(error={
@@ -55,8 +54,7 @@ def add_habit(username, name, period, target_seconds):
 
     try:
         db.session.commit()
-    except Exception as e:
-        print(e)
+    except:
         response = jsonify(error={
             "message": "Unable to commit"
         })
@@ -71,7 +69,7 @@ def add_habit(username, name, period, target_seconds):
 def update_habit(username, habit_id, name, period, target_seconds):
     user = User.query.filter_by(username=username).first()
 
-    habit = Habit.query.filter_by(id=habit_id, user_id=user.id).first()
+    habit = Habit.query.with_parent(user).filter_by(id=habit_id).first()
 
     if not habit:
         response = jsonify(error={
@@ -91,10 +89,10 @@ def update_habit(username, habit_id, name, period, target_seconds):
     })
 
 
-def deactivate_habit(username, habit_id):
+def activate_habit(username, habit_id, active):
     user = User.query.filter_by(username=username).first()
 
-    habit = Habit.query.filter_by(id=habit_id, user_id=user.id).first()
+    habit = Habit.query.with_parent(user).filter_by(id=habit_id).first()
 
     if not habit:
         response = jsonify(error={
@@ -103,9 +101,9 @@ def deactivate_habit(username, habit_id):
         response.status_code = 404
         return response
 
-    habit.active = False
+    habit.active = active
     db.session.commit()
 
     return jsonify(success={
-        "message": "Successfully deactivate habit {!s}".format(habit_id)
+        "message": "Successfully {} habit {!s}".format("activate" if active else "deactivate", habit_id)
     })

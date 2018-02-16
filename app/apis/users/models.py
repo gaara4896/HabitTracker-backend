@@ -13,6 +13,7 @@ class User(Base):
     email = db.Column(db.String(128), nullable=False, unique=True)
     nickname = db.Column(db.String(255), nullable=False)
     email_verified = db.Column(db.Boolean, default=False)
+    habits = db.relationship("Habit", backref='user', lazy=True)
 
     def __init__(self, username, password, email, nickname):
         self.username = username
