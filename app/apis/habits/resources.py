@@ -1,7 +1,7 @@
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restplus import Namespace, Resource, fields, reqparse
 
-from .controllers import get_habits, add_habits
+from .controllers import get_habits, add_habit, update_habit, deactivate_habit
 
 api = Namespace("habits", description="Habit")
 
@@ -15,9 +15,19 @@ habit_fields.add_argument(
     location="form")
 habit_fields.add_argument("target_seconds", type=int, required=True, location="form")
 
+update_fields = reqparse.RequestParser()
+update_fields.add_argument("name", type=str, required=False, location="form")
+update_fields.add_argument(
+    "period",
+    choices=("daily", "weekly", "monthly", "yearly"),
+    help="Can only be 'daily', 'weekly', 'monthly', 'yearly'",
+    required=False,
+    location="form")
+update_fields.add_argument("target_seconds", type=int, required=False, location="form")
+
 
 @api.route("/")
-class Habit(Resource):
+class Habits(Resource):
 
     @jwt_required
     @api.header("Authorization", "access_token", required=True)
@@ -25,6 +35,38 @@ class Habit(Resource):
         username = get_jwt_identity()
 
         return get_habits(username)
+
+
+@api.route("/<int:habit_id>")
+class Habit(Resource):
+
+    @jwt_required
+    @api.header("Authorization", "access_token", required=True)
+    def get(self, habit_id):
+        username = get_jwt_identity()
+
+        return get_habits(username, habit_id=habit_id)
+
+    @jwt_required
+    @api.header("Authorization", "access_token", required=True)
+    @api.doc(body=update_fields)
+    @api.expect(update_fields)
+    def put(self, habit_id):
+        username = get_jwt_identity()
+
+        args = update_fields.parse_args()
+        name = args.get("name")
+        period = args.get("period")
+        target_seconds = args.get("target_seconds")
+
+        return update_habit(username, habit_id, name, period, target_seconds)
+
+    @jwt_required
+    @api.header("Authorization", "access_token", required=True)
+    def delete(self, habit_id):
+        username = get_jwt_identity()
+
+        return deactivate_habit(username, habit_id)
 
 
 @api.route("/add")
@@ -42,4 +84,4 @@ class AddHabit(Resource):
         period = args.get("period")
         target_seconds = args.get("target_seconds")
 
-        return add_habits(username, name, period, target_seconds)
+        return add_habit(username, name, period, target_seconds)
