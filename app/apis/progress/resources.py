@@ -1,6 +1,8 @@
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restplus import Namespace, Resource, fields, reqparse
 
+from .controllers import start_habit, end_habit
+
 api = Namespace("progress", description="Progress")
 
 habit_fields = reqparse.RequestParser()

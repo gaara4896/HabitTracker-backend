@@ -4,11 +4,11 @@ from sqlalchemy import desc
 
 from app.extensions import db
 from .models import Progress
-from ..habts.models import Habit
+from ..habits.models import Habit
 from ..users.models import User
 
 
-def starte_habit(username, habit_id, time):
+def start_habit(username, habit_id, time):
     habit = Habit.query.with_parent(
         User.query.filter_by(username=username).first()
     ).filter_by(id=habit_id).first()
@@ -23,7 +23,7 @@ def starte_habit(username, habit_id, time):
     progress = db.session.query(Progress).with_parent(habit).\
         order_by(desc(Progress.date_created)).first()
 
-    if progress:
+    if progress.end_time == None if progress else False:
         response = jsonify(error={
             "message": "Habit {!s} had not end yet".format(habit_id)
         })
@@ -64,7 +64,7 @@ def end_habit(username, habit_id, time):
     progress = db.session.query(Progress).with_parent(habit).\
         order_by(desc(Progress.date_created)).first()
 
-    if progress.end_time:
+    if progress.end_time if progress else True:
         response = jsonify(error={
             "message": "Habit {!s} had not started yet".format(habit_id)
         })
