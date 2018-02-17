@@ -10,7 +10,7 @@ class User(Base):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(128), nullable=True, unique=True)
     password_hash = db.Column(db.String(255), nullable=True)
-    email = db.Column(db.String(128), nullable=False, unique=True)
+    email = db.Column(db.String(128), nullable=False)
     nickname = db.Column(db.String(255), nullable=False)
     email_verified = db.Column(db.Boolean, default=False)
     habits = db.relationship("Habit", backref='user', lazy=True)

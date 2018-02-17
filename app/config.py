@@ -32,6 +32,7 @@ class Config(object):
     MSEARCH_ENABLE = True
 
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=24)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=365)
     UPLOAD_FOLDER = 'upload/'
     MAX_CONTENT_PATH = 26214400
 
