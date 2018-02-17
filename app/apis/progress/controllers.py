@@ -20,7 +20,8 @@ def get_progress(username, progress_id=None):
                     "habit_id": habit.id,
                     "start_time": progress.start_time.isoformat(),
                     "end_time": progress.end_time.isoformat() if progress.end_time else "",
-                    "length_seconds": progress.length_seconds if progress.length_seconds else ""
+                    "length_seconds": progress.length_seconds if progress.length_seconds else "",
+                    "removed": progress.removed if progress.removed else False
                 })
     else:
         progress = db.session.query(Progress).with_parent(
@@ -41,11 +42,70 @@ def get_progress(username, progress_id=None):
             "habit_id": progress.habit_id,
             "start_time": progress.start_time.isoformat(),
             "end_time": progress.end_time.isoformat() if progress.end_time else "",
-            "length_seconds": progress.length_seconds if progress.length_seconds else ""
+            "length_seconds": progress.length_seconds if progress.length_seconds else "",
+            "removed": progress.removed if progress.removed else False
         }
 
     return jsonify(success={
         "result": result
+    })
+
+
+def update_progress(username, progress_id, start_time, end_time):
+    progress = db.session.query(Progress).with_parent(
+        db.session.query(Habit).with_parent(
+            User.query.filter_by(username=username).first()
+        ).outerjoin(Habit.progresses).filter(
+            Habit.progresses.any(Progress.id == progress_id)
+        ).first()
+    ).filter_by(id=progress_id).first()
+
+    if not progress:
+        response = jsonify(error={
+            "message": "Progress {!s} not found".format(progress_id)
+        })
+        response.status_code = 404
+        return response
+
+    try:
+        if start_time:
+            progress.update_start_time(dateutil.parser.parse(start_time))
+        if end_time:
+            progress.update_end_time(dateutil.parser.parse(end_time))
+        db.session.commit()
+    except ValueError:
+        response = jsonify(error={
+            "message": "Time are not formatted as ISO format"
+        })
+        response.status_code = 400
+        return response
+
+    return jsonify(success={
+        "message": "Successfully update progress {!s}".format(progress_id)
+    })
+
+
+def delete_progress(username, progress_id, restore=False):
+    progress = db.session.query(Progress).with_parent(
+        db.session.query(Habit).with_parent(
+            User.query.filter_by(username=username).first()
+        ).outerjoin(Habit.progresses).filter(
+            Habit.progresses.any(Progress.id == progress_id)
+        ).first()
+    ).filter_by(id=progress_id).first()
+
+    if not progress:
+        response = jsonify(error={
+            "message": "Progress {!s} not found".format(progress_id)
+        })
+        response.status_code = 404
+        return response
+
+    progress.removed = not restore
+    db.session.commit()
+
+    return jsonify(success={
+        "message": "Successfully {} progress {!s}".format("restore" if restore else "remove", progress_id)
     })
 
 

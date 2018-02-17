@@ -12,6 +12,7 @@ class Progress(Base):
     start_time = db.Column(db.DateTime, default=db.func.now())
     end_time = db.Column(db.DateTime, nullable=True)
     length_seconds = db.Column(db.Integer, nullable=True)
+    removed = db.Column(db.Boolean, default=False)
 
     def __init__(self, habit_id, start_time):
         self.habit_id = habit_id
@@ -21,6 +22,16 @@ class Progress(Base):
     def end(self, end_time):
         self.end_time = end_time if end_time else datetime.now()
         self.length_seconds = (self.end_time - self.start_time).seconds
+
+    def update_start_time(self, start_time):
+        if start_time > self.start_time and start_time < self.end_time:
+            self.start_time = start_time
+            self.length_seconds = (self.end_time - self.start_time).seconds
+
+    def update_end_time(self, end_time):
+        if end_time < self.end_time and end_time > self.start_time:
+            self.end_time = end_time
+            self.length_seconds = (self.end_time - self.start_time).seconds
 
     def __repr__(self):
         return "<Progress: {} to {}>".format(self.start_time, self.end_time)
