@@ -43,14 +43,20 @@ api.add_namespace(progress, path="/progress")
 
 @jwt.expired_token_loader
 def expired_token_callback():
-    return jsonify(error="The token has expired"), 401
+    return jsonify(error={
+        "message": "The token has expired"
+    }), 401
 
 
 @jwt.invalid_token_loader
 def invalid_token_callback(msg):
-    return jsonify(error="The token is Invalid"), 401
+    return jsonify(error={
+        "message": "The token is Invalid"
+    }), 401
 
 
 @jwt.unauthorized_loader
 def unauthorized_loader(msg):
-    return jsonify(error="No token presented"), 401
+    return jsonify(error={
+        "message": "No token presented"
+    }), 401

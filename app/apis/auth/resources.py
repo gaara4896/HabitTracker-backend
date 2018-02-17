@@ -54,6 +54,20 @@ class Login(Resource):
         return login(username, password)
 
 
+@api.route("/fresh-login")
+class FreshLogin(Resource):
+
+    @api.doc(body=auth_fields)
+    @api.expect(auth_fields)
+    def post(self):
+        args = auth_fields.parse_args()
+
+        username = args.get("username")
+        password = args.get("password")
+
+        return login(username, password, fresh=True)
+
+
 @api.route("/refresh")
 class Refresh(Resource):
 

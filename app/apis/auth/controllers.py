@@ -34,7 +34,7 @@ def register(username, password, email, nickname):
     })
 
 
-def login(username, password):
+def login(username, password, fresh=False):
     user = User.query.filter_by(username=username).first()
 
     if not user:
@@ -45,10 +45,15 @@ def login(username, password):
         return response
 
     if(user.check_password(password)):
-        return jsonify(success={
-            "access_token": create_access_token(identity=username, fresh=True),
-            "refresh_token": create_refresh_token(identity=username)
-        })
+        if fresh:
+            return jsonify(success={
+                "access_token": create_access_token(identity=username, fresh=True)
+            })
+        else:
+            return jsonify(success={
+                "access_token": create_access_token(identity=username, fresh=True),
+                "refresh_token": create_refresh_token(identity=username)
+            })
     else:
         response = jsonify(error={
             "message": "Wrong password"
